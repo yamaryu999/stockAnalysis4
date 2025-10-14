@@ -1,0 +1,17 @@
+{
+  "event": {
+    "GUIDE_UP": 1.0,
+    "EARNINGS_POSITIVE": 0.8,
+    "VOL_SPIKE": 0.6,
+    "NEWS_POS": 0.4,
+    "TDNET": 0.5,
+    "NEWS_NEG": 0.1,
+    "NEWS_NEU": 0.2
+  },
+  "tape": {
+    "volume_z": 0.4,
+    "gap_pct": 0.3,
+    "supply_demand_proxy": 0.3
+  },
+  "minScore": 60
+}

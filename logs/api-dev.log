@@ -1,0 +1,17 @@
+
+> @kabu4/api@0.1.0 dev
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3001
+
+ ✓ Ready in 5.7s
+ ○ Compiling /api/picks ...
+ ✓ Compiled /api/picks in 767ms (41 modules)
+[api] Prisma datasource: file:/tmp/kabu4-dev.db
+ ✓ Compiled /api/symbols/[code]/events in 412ms (44 modules)
+[api] Prisma datasource: file:/tmp/kabu4-dev.db
+[api] Prisma datasource: file:/tmp/kabu4-dev.db
+ ✓ Compiled /api/symbols/[code]/prices in 232ms (47 modules)
+[api] Prisma datasource: file:/tmp/kabu4-dev.db
+[api] Prisma datasource: file:/tmp/kabu4-dev.db

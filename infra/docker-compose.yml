@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+      target: api
+    environment:
+      DATABASE_URL: "file:/app/prisma/dev.db"
+      PORT: "3001"
+    command: sh -c "npm run prisma:migrate && npm --workspace apps/api run start"
+    volumes:
+      - prisma-data:/app/prisma
+    ports:
+      - "3001:3001"
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+      target: web
+    environment:
+      NEXT_PUBLIC_API_URL: "http://api:3001"
+      PORT: "3000"
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+  worker:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+      target: worker
+    environment:
+      DATABASE_URL: "file:/app/prisma/dev.db"
+    volumes:
+      - prisma-data:/app/prisma
+    depends_on:
+      - api
+
+volumes:
+  prisma-data:

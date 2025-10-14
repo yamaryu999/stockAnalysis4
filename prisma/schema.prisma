@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Symbol {
+  code          String         @id
+  name          String
+  sector        String?
+  prices        DailyPrice[]
+  events        CorporateEvent[]
+  features      Feature[]
+  picks         Pick[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model DailyPrice {
+  code   String
+  date   DateTime
+  open   Float
+  high   Float
+  low    Float
+  close  Float
+  volume Int
+  vwap   Float?
+
+  symbol Symbol @relation(fields: [code], references: [code], onDelete: Cascade)
+
+  @@id([code, date])
+  @@index([date])
+}
+
+model CorporateEvent {
+  id        String    @id @default(cuid())
+  code      String
+  date      DateTime
+  type      String
+  title     String
+  summary   String?
+  source    String
+  scoreRaw  Float?
+
+  symbol    Symbol   @relation(fields: [code], references: [code], onDelete: Cascade)
+
+  @@index([code, date])
+  @@index([date, type])
+}
+
+model Feature {
+  code      String
+  date      DateTime
+  name      String
+  value     Float
+
+  symbol    Symbol  @relation(fields: [code], references: [code], onDelete: Cascade)
+
+  @@id([code, date, name])
+  @@index([date, name])
+}
+
+model Pick {
+  date       DateTime
+  code       String
+  scoreFinal Float
+  reasons    String
+  stats      String?
+
+  symbol     Symbol @relation(fields: [code], references: [code], onDelete: Cascade)
+
+  @@id([date, code])
+  @@index([scoreFinal])
+}

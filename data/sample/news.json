@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2024-01-26",
+    "code": "6758",
+    "title": "ソニーグループ、新型センサーでEV市場狙う",
+    "summary": "車載向けの高性能撮像センサーを量産しEV関連事業を強化",
+    "url": "https://example.com/news/sony-sensor",
+    "polarity": "pos"
+  },
+  {
+    "date": "2024-02-06",
+    "code": "9984",
+    "title": "ソフトバンクG、生成AIスタートアップに戦略出資",
+    "summary": "海外スタートアップと提携し成長加速を目指す",
+    "url": "https://example.com/news/sbg-ai",
+    "polarity": "pos"
+  },
+  {
+    "date": "2024-01-15",
+    "code": "7203",
+    "title": "トヨタ自動車、国内工場の一部で操業停止",
+    "summary": "設備点検のため短期間の停止を予定",
+    "url": "https://example.com/news/toyota-maintenance",
+    "polarity": "neu"
+  }
+]

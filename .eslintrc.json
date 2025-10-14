@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/eslintrc",
+  "root": true,
+  "env": {
+    "es2022": true,
+    "node": true
+  },
+  "plugins": ["@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json"],
+    "tsconfigRootDir": "."
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    ".next"
+  ],
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": "off"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "app": {
+    "title": "イベント・ドリブン銘柄レーダー",
+    "nav": {
+      "dashboard": "ダッシュボード",
+      "settings": "設定"
+    }
+  },
+  "dashboard": {
+    "heading": "日次ピックアップ",
+    "filters": {
+      "minScore": "最低スコア",
+      "eventType": "イベント種別"
+    },
+    "table": {
+      "code": "銘柄コード",
+      "name": "銘柄名",
+      "score": "スコア",
+      "volumeZ": "出来高Z",
+      "gapPct": "ギャップ%",
+      "sdProxy": "需給Proxy",
+      "high20d": "20日高値距離%",
+      "close": "終値"
+    },
+    "drawer": {
+      "events": "イベント",
+      "metrics": "指標",
+      "stats": {
+        "volumeZ": "出来高Zスコア",
+        "gapPct": "ギャップ率",
+        "sdProxy": "需給Proxy",
+        "high20d": "20日高値比"
+      }
+    },
+    "empty": "指定条件で該当データがありません"
+  },
+  "settings": {
+    "heading": "重みと閾値",
+    "description": "ローカル環境でのみ保存されます。API側の設定と同期はされません。",
+    "minScore": "最低表示スコア",
+    "reset": "リセット",
+    "saved": "保存しました"
+  }
+}

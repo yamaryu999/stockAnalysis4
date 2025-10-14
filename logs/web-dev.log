@@ -1,0 +1,37 @@
+
+> @kabu4/web@0.1.0 dev
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3000
+
+ ✓ Ready in 6.3s
+ ○ Compiling / ...
+ ✓ Compiled / in 12.8s (481 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 2.5s (523 modules)
+ ⨯ lib/api.ts (53:10) @ fetchPicks
+ ⨯ Error: Failed to fetch picks (400)
+    at fetchPicks (./lib/api.ts:23:15)
+    at async DashboardPage (./app/dashboard/page.tsx:29:18)
+[0m [90m 51 |[39m   })[33m;[39m[0m
+[0m [90m 52 |[39m   [36mif[39m ([33m![39mresponse[33m.[39mok) {[0m
+[0m[31m[1m>[22m[39m[90m 53 |[39m     [36mthrow[39m [36mnew[39m [33mError[39m([32m`Failed to fetch picks (${response.status})`[39m)[33m;[39m[0m
+[0m [90m    |[39m          [31m[1m^[22m[39m[0m
+[0m [90m 54 |[39m   }[0m
+[0m [90m 55 |[39m   [36mreturn[39m response[33m.[39mjson() [36mas[39m [33mPromise[39m[33m<[39m[33mPicksResponse[39m[33m>[39m[33m;[39m[0m
+[0m [90m 56 |[39m }[0m
+ ⨯ lib/api.ts (53:10) @ fetchPicks
+ ⨯ Error: Failed to fetch picks (400)
+    at fetchPicks (./lib/api.ts:23:15)
+    at async DashboardPage (./app/dashboard/page.tsx:29:18)
+digest: "3620866311"
+[0m [90m 51 |[39m   })[33m;[39m[0m
+[0m [90m 52 |[39m   [36mif[39m ([33m![39mresponse[33m.[39mok) {[0m
+[0m[31m[1m>[22m[39m[90m 53 |[39m     [36mthrow[39m [36mnew[39m [33mError[39m([32m`Failed to fetch picks (${response.status})`[39m)[33m;[39m[0m
+[0m [90m    |[39m          [31m[1m^[22m[39m[0m
+[0m [90m 54 |[39m   }[0m
+[0m [90m 55 |[39m   [36mreturn[39m response[33m.[39mjson() [36mas[39m [33mPromise[39m[33m<[39m[33mPicksResponse[39m[33m>[39m[33m;[39m[0m
+[0m [90m 56 |[39m }[0m
+ ○ Compiling /settings ...
+ ✓ Compiled /settings in 630ms (516 modules)
