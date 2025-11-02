@@ -25,13 +25,50 @@ function formatNumber(value: number | null | undefined) {
   return value.toFixed(2);
 }
 
-function getTopReasons(reasons: unknown[], limit = 3): Array<{ label: string; applied: number }> {
+function reasonLabelJa(r: ScoreReason): string {
+  if (r.kind === "event") {
+    const map: Record<string, string> = {
+      GUIDE_UP: "上方修正",
+      EARNINGS_POSITIVE: "好決算",
+      TDNET: "適時開示",
+      VOL_SPIKE: "出来高急増",
+      NEWS_POS: "ニュース(ポジティブ)",
+      NEWS_NEU: "ニュース(中立)",
+      NEWS_NEG: "ニュース(ネガティブ)"
+    };
+    return map[r.tag] ?? `イベント(${r.tag})`;
+  }
+  if (r.kind === "tape") {
+    const map: Record<string, string> = {
+      volume_z: "出来高Z",
+      gap_pct: "ギャップ率",
+      supply_demand_proxy: "需給(Proxy)"
+    };
+    return map[r.tag] ?? `テープ(${r.tag})`;
+  }
+  if (r.kind === "penalty") {
+    if (r.tag === "recent_negative_event") return "直近の悪材料";
+    return "ペナルティ";
+  }
+  if (r.kind === "filter") {
+    const map: Record<string, string> = {
+      missing_signals: "信号なし",
+      high20d_dist_pct: "20日高値からの乖離(低すぎ)",
+      close_price: "株価下限(安値フィルタ)"
+    };
+    return map[r.tag] ?? "フィルター";
+  }
+  return `${r.kind}:${r.tag}`;
+}
+
+function getTopReasons(reasons: unknown[], limit = 3): Array<{ label: string; applied: number; title?: string }> {
   const casted = Array.isArray(reasons) ? (reasons as ScoreReason[]) : [];
   const items = casted
     .filter((r) => r && typeof r === "object" && typeof (r as ScoreReason).applied === "number")
     .map((r) => {
-      const label = `${r.kind}:${r.tag}`;
-      return { label, applied: r.applied };
+      const label = reasonLabelJa(r);
+      const title = typeof r.details === "object" && r.details && "title" in r.details ? String((r.details as Record<string, unknown>).title ?? "") : undefined;
+      return { label, applied: r.applied, title };
     })
     .sort((a, b) => Math.abs(b.applied) - Math.abs(a.applied))
     .slice(0, limit);
@@ -48,8 +85,9 @@ function ReasonsCell({ reasons }: { reasons: unknown[] }) {
       {top.map((r) => {
         const sign = r.applied >= 0 ? "+" : "";
         const tone = r.applied >= 0 ? "bg-emerald-900/30 text-emerald-100 border-emerald-600/30" : "bg-rose-900/30 text-rose-100 border-rose-600/30";
+        const title = r.title && r.title.length > 0 ? r.title : undefined;
         return (
-          <span key={`${r.label}-${r.applied}`} className={`rounded border px-2 py-0.5 text-[10px] ${tone}`}>
+          <span key={`${r.label}-${r.applied}`} title={title} className={`rounded border px-2 py-0.5 text-[10px] ${tone}`}>
             {r.label} {sign}{r.applied.toFixed(2)}
           </span>
         );
