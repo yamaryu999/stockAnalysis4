@@ -56,10 +56,13 @@ async function seed() {
 
   const events = parseCsv(path.join(__dirname, "../data/sample/events.csv"));
   for (const event of events) {
+    // Normalize to ISO string to avoid SQLite storing epoch millis inconsistently
+    const iso = new Date(event.date).toISOString(); // RFC3339 with Z
     await prisma.corporateEvent.create({
       data: {
         code: event.code,
-        date: new Date(event.date),
+        // Pass ISO string so SQLite keeps TEXT consistently (not epoch millis)
+        date: iso,
         type: event.type,
         title: event.title,
         summary: event.summary || null,

@@ -18,19 +18,20 @@ export default async function DashboardPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const data = await loadData(searchParams);
-  const currentDate = typeof searchParams.date === "string" ? searchParams.date : data.date;
+  const effectiveDate = data.date;
+  const requestedDate = data.requestedDate;
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold">{t("dashboard.heading")}</h2>
-        <p className="text-sm text-slate-400">{currentDate}</p>
+        <p className="text-sm text-slate-400">{effectiveDate}</p>
       </div>
       <Suspense fallback={<div>Loading...</div>}>
         <DashboardContent
           initialData={data}
           initialFilters={{
-            date: currentDate,
+            date: typeof searchParams.date === "string" ? searchParams.date : requestedDate,
             minScore:
               typeof searchParams.minScore === "string"
                 ? Number(searchParams.minScore)

@@ -62,6 +62,52 @@ npm run dev:web
 
 `web` アプリは `NEXT_PUBLIC_API_URL` に API のベース URL を参照します（.env で上書き可）。
 
+## クイックスタート（最短手順）
+
+このリポジトリでは pnpm を推奨します。初回セットアップ済みであれば、次回以降は次の2コマンドだけでOKです。
+
+```bash
+# 依存が未インストールの場合のみ
+pnpm install
+
+# 2ターミナルで起動
+pnpm run dev:api   # → http://localhost:3001
+pnpm run dev:web   # → http://localhost:3000
+```
+
+- すでに seed/ingest 済みのサンプルDBが `prisma/dev.db` に含まれています。
+- `.env` の `DATABASE_URL` はこのPCに合わせた絶対パスに設定済みです。プロジェクトの場所を移動した場合は更新してください。
+
+## 外部データ（銘柄・イベント）の取得
+
+このMVPはローカルのサンプルCSV/JSONを同梱していますが、.env を設定すると「ネット上の情報から銘柄を選定」できます。
+
+- 銘柄ユニバース（内部のリストではなくネット情報を優先）
+  - `SYMBOLS_CSV_URL`: `code,name[,sector]` を持つCSVのURL
+  - `SYMBOLS_JSON_URL`: `["7203", ...]` または `[{"code":"7203","name":"トヨタ自動車"}, ...]`
+  - いずれも未設定の場合は、直近のTDNET/ニュース/決算イベントに登場したコードから自動生成します
+- TDNET（適時開示）
+  - `TDNET_RSS_URL` を指定すると当該ページを取得し、4桁コードを抽出してイベント候補にします
+- ニュース（リアルタイム）
+  - 既定で `NEWS_FEED_URL=https://kabutan.jp/news/?b=k250` を参照し、最新の決算ニュースをスクレイピングしてイベント化します
+  - 記事タイトルから極性を推定し、ポジティブ／ネガティブ／ニュートラルでスコアに反映します
+  - フィードを差し替えたい場合は JSON 配列（`[{code,title,summary,date,polarity}]`）の URL を設定してください
+- 決算/ニュース（任意のJSONフィード）
+  - `EARNINGS_FEED_URL` / `NEWS_FEED_URL` にJSON配列URLを指定（各要素: `code,title,summary,date[,polarity]`）
+
+設定後はインジェストを実行:
+
+```bash
+. .venv/bin/activate
+PYTHONPATH=. python -m jobs.ingest.main
+```
+
+## よくあるトラブルと対処
+
+- ポート競合: `apps/api/package.json` / `apps/web/package.json` の `dev` スクリプトの `-p` を変更。
+- APIがDBを開けない: `.env` の `DATABASE_URL` が現在のパスに合っているか確認。
+- Web→APIの接続: `NEXT_PUBLIC_API_URL` を `http://localhost:3001` に設定（既定値も同じ）。
+
 ## docker-compose での動作確認
 
 ```
@@ -82,6 +128,17 @@ TypeScript 側 (Vitest):
 ```bash
 npm test
 ```
+
+### E2E (Playwright)
+
+Playwright による E2E を追加しました。
+
+- ブラウザ取得: `npm run playwright:install`（権限問題がある場合は `npx playwright install chromium`）
+- サーバーを Playwright に起動させる: `npm run test:e2e`
+- 既存サーバーを使う（推奨・高速）:
+  - `pnpm --filter @kabu4/api dev`（ポート 3001）
+  - `pnpm --filter @kabu4/web dev`（ポート 3000）
+  - `E2E_EXTERNAL_SERVERS=1 npm run test:e2e`
 
 Python ルールの正規表現 (Pytest):
 
@@ -118,3 +175,36 @@ PYTHONPATH=. pytest tests/regex
 - SQLite ファイルは `prisma/dev.db` に生成されます。Postgres への移行時は `.env` の `DATABASE_URL` を差し替えて `prisma migrate deploy` を実行してください。
 - LLM を使う処理は未搭載ですが、`jobs/ingest` のアダプター構成で差し替え容易です。
 
+## MCP: Tavily 検索サーバーの利用
+
+エージェントからウェブ検索・抽出を使える Tavily MCP Server をワークスペースに追加しました（VS Code 連携）。
+
+- 追加した設定: `.vscode/mcp.json`
+- 起動方法: VS Code が MCP クライアントに対応していれば、自動で `tavily` サーバーを `npx` で起動します。
+- API キー: プロンプトで Tavily API Key の入力を求められます（入力はローカルにのみ保持）。
+
+他クライアントでの利用例（参考）:
+
+- Cursor/Claude Desktop などの `mcpServers` 設定で、以下のいずれかを追加します。
+  - ローカル起動: `npx -y tavily-mcp@latest`（環境変数 `TAVILY_API_KEY` を設定）
+  - リモート接続: `npx -y mcp-remote https://mcp.tavily.com/mcp/?tavilyApiKey=<あなたのAPIキー>`
+
+Tavily の API キーは https://www.tavily.com/ から取得できます。
+
+## MCP: Browser（Playwright）
+
+ローカルのヘッドレスChromiumでページ表示・スクレイピングを行う Browser MCP を追加しました。
+
+- 設定ファイル: `.vscode/mcp.json` の `browser` エントリ（`playwright-mcp-server`）
+- 事前準備（ブラウザ未インストールの環境）:
+
+```bash
+pnpm exec playwright install chromium
+```
+
+- IDEがMCPクライアント対応の場合、起動時に自動で `npx -y playwright-mcp-server@latest` を立ち上げます。
+- うまく起動しない場合は、`AGENTS.md` のトラブルシューティングも参照してください。
+
+---
+
+人間向けの詳細手順は本READMEに、エージェント（AI）向けの運用メモは `AGENTS.md` にまとめています。

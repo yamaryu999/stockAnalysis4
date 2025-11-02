@@ -20,9 +20,18 @@ type Props = {
   eventTypes: EventTypeOption[];
   weights: WeightConfig;
   onChange: (next: FilterState) => void;
+  onRefreshNews?: () => void;
+  refreshing?: boolean;
 };
 
-export default function FilterBar({ filters, eventTypes, weights, onChange }: Props) {
+export default function FilterBar({
+  filters,
+  eventTypes,
+  weights,
+  onChange,
+  onRefreshNews,
+  refreshing = false
+}: Props) {
   const handleChange = useCallback(
     (patch: Partial<FilterState>) => {
       onChange({
@@ -80,13 +89,25 @@ export default function FilterBar({ filters, eventTypes, weights, onChange }: Pr
           />
         </div>
       </div>
-      <div className="flex flex-col text-xs text-slate-500">
-        <span>
-          {t("settings.minScore")}: {weights.minScore}
-        </span>
-        <span>
-          event weights: {Object.entries(weights.event).map(([key, value]) => `${key}:${value}`).join(" ")}
-        </span>
+      <div className="flex flex-col items-end gap-2 text-xs text-slate-500">
+        {onRefreshNews ? (
+          <button
+            type="button"
+            onClick={onRefreshNews}
+            disabled={refreshing}
+            className="rounded bg-accent px-3 py-2 font-semibold text-slate-900 transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {refreshing ? t("dashboard.refresh.pending") : t("dashboard.refresh.button")}
+          </button>
+        ) : null}
+        <div className="text-right">
+          <span className="block">
+            {t("settings.minScore")}: {weights.minScore}
+          </span>
+          <span className="block">
+            event weights: {Object.entries(weights.event).map(([key, value]) => `${key}:${value}`).join(" ")}
+          </span>
+        </div>
       </div>
     </section>
   );

@@ -34,6 +34,8 @@ type PickResponseItem = {
 
 export type PicksResponse = {
   date: string;
+  requestedDate: string;
+  fallbackApplied: boolean;
   items: PickResponseItem[];
   weights: ReturnType<typeof getWeights>;
 };
@@ -56,32 +58,56 @@ function parseJsonField<T>(value: Prisma.JsonValue | string | null): T | null {
 export async function fetchPicks(params: PicksQuery): Promise<PicksResponse> {
   const weights = getWeights();
   const minScore = params.minScore ?? weights.minScore;
-  const targetDate = new Date(`${params.date}T00:00:00.000Z`);
-  const nextDate = new Date(targetDate);
-  nextDate.setDate(nextDate.getDate() + 1);
 
-  const picks = await prisma.pick.findMany({
+  const toWindow = (isoDate: string) => {
+    const start = new Date(`${isoDate}T00:00:00.000Z`);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    return { start, end };
+  };
+
+  const requestedDate = params.date;
+  let effectiveDate = requestedDate;
+  let { start: targetDate, end: nextDate } = toWindow(effectiveDate);
+
+  let picks = await prisma.pick.findMany({
     where: {
-      date: {
-        gte: targetDate,
-        lt: nextDate
-      },
-      scoreFinal: {
-        gte: minScore
-      }
+      date: { gte: targetDate, lt: nextDate },
+      scoreFinal: { gte: minScore }
     },
-    include: {
-      symbol: true
-    },
-    orderBy: {
-      scoreFinal: "desc"
-    }
+    include: { symbol: true },
+    orderBy: { scoreFinal: "desc" }
   });
+
+  // Fallback: if no picks for the requested date, use the latest available date with picks
+  if (picks.length === 0) {
+    const latest = await prisma.pick.findFirst({
+      where: { scoreFinal: { gte: minScore } },
+      orderBy: { date: "desc" }
+    });
+    if (latest) {
+      const latestIso = latest.date.toISOString().slice(0, 10);
+      if (latestIso !== effectiveDate) {
+        effectiveDate = latestIso;
+        ({ start: targetDate, end: nextDate } = toWindow(effectiveDate));
+        picks = await prisma.pick.findMany({
+          where: {
+            date: { gte: targetDate, lt: nextDate },
+            scoreFinal: { gte: minScore }
+          },
+          include: { symbol: true },
+          orderBy: { scoreFinal: "desc" }
+        });
+      }
+    }
+  }
 
   const codes = picks.map((pick) => pick.code);
   if (codes.length === 0) {
     return {
-      date: params.date,
+      date: effectiveDate,
+      requestedDate,
+      fallbackApplied: effectiveDate !== requestedDate,
       items: [],
       weights
     };
@@ -131,7 +157,7 @@ export async function fetchPicks(params: PicksQuery): Promise<PicksResponse> {
 
   const featureMap = new Map<string, Record<string, number>>();
   for (const row of featureRows) {
-    const key = `${row.code}:${params.date}`;
+    const key = `${row.code}:${effectiveDate}`;
     const bucket = featureMap.get(key) ?? {};
     bucket[row.name] = row.value;
     featureMap.set(key, bucket);
@@ -139,7 +165,7 @@ export async function fetchPicks(params: PicksQuery): Promise<PicksResponse> {
 
   const priceMap = new Map<string, number>();
   priceRows.forEach((row) => {
-    priceMap.set(`${row.code}:${params.date}`, Number(row.close));
+    priceMap.set(`${row.code}:${effectiveDate}`, Number(row.close));
   });
 
   const eventsByCode = new Map<string, typeof events>();
@@ -153,7 +179,7 @@ export async function fetchPicks(params: PicksQuery): Promise<PicksResponse> {
     .map<PickResponseItem>((pick) => {
       const reasons = parseJsonField<unknown[]>(pick.reasons);
       const stats = parseJsonField<Record<string, number | null>>(pick.stats) ?? {};
-      const key = `${pick.code}:${params.date}`;
+      const key = `${pick.code}:${effectiveDate}`;
       const featureBucket = featureMap.get(key) ?? {};
       const eventBucket = eventsByCode.get(pick.code) ?? [];
 
@@ -188,7 +214,9 @@ export async function fetchPicks(params: PicksQuery): Promise<PicksResponse> {
     });
 
   return {
-    date: params.date,
+    date: effectiveDate,
+    requestedDate,
+    fallbackApplied: effectiveDate !== requestedDate,
     items: filteredItems,
     weights
   };

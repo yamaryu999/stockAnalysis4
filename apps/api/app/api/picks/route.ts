@@ -26,7 +26,10 @@ export async function GET(request: NextRequest) {
   return Response.json(payload, {
     headers: {
       "Cache-Control": "no-store",
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Origin": "*",
+      "X-Kabu4-Requested-Date": payload.requestedDate,
+      "X-Kabu4-Effective-Date": payload.date,
+      "X-Kabu4-Date-Fallback": payload.fallbackApplied ? "1" : "0"
     }
   });
 }

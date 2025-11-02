@@ -33,8 +33,17 @@ export type PickItem = {
 
 export type PicksResponse = {
   date: string;
+  requestedDate: string;
+  fallbackApplied: boolean;
   items: PickItem[];
   weights: WeightConfig;
+};
+
+export type RefreshNewsResponse = {
+  newsCount: number;
+  eventsUpserted: number;
+  picksCount: number;
+  date: string;
 };
 
 export async function fetchPicks(query: PicksQuery): Promise<PicksResponse> {
@@ -53,6 +62,21 @@ export async function fetchPicks(query: PicksQuery): Promise<PicksResponse> {
     throw new Error(`Failed to fetch picks (${response.status})`);
   }
   return response.json() as Promise<PicksResponse>;
+}
+
+export async function refreshNews(): Promise<RefreshNewsResponse> {
+  const response = await fetch(`${API_BASE}/api/news/refresh`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    const message = error?.error ?? `Failed to refresh news (${response.status})`;
+    throw new Error(message);
+  }
+  return response.json() as Promise<RefreshNewsResponse>;
 }
 
 export async function fetchSymbolEvents(code: string) {

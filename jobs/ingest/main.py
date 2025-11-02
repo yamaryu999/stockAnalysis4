@@ -2,11 +2,16 @@
 from __future__ import annotations
 
 import csv
+import io
 import json
+import re
 from collections import defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping
+from typing import Dict, Iterable, List, Mapping, Sequence
+
+import requests
+from bs4 import BeautifulSoup
 
 from .adapters.earnings_adapter import EarningsAdapter
 from .adapters.news_adapter import NewsAdapter
@@ -21,11 +26,135 @@ from .utils.env import load_env
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def read_symbols() -> List[Dict[str, str]]:
+def read_symbols_local() -> List[Dict[str, str]]:
+    """Read fallback symbols from the local sample CSV."""
     symbols_path = ROOT / "data" / "sample" / "symbols.csv"
+    if not symbols_path.exists():
+        return []
     with symbols_path.open("r", encoding="utf-8") as fp:
         reader = csv.DictReader(fp)
         return list(reader)
+
+
+def fetch_text(session: requests.Session, url: str, timeout: int = 15) -> str:
+    resp = session.get(url, timeout=timeout)
+    resp.raise_for_status()
+    if resp.encoding is None:
+        resp.encoding = resp.apparent_encoding or "utf-8"
+    return resp.text
+
+
+def resolve_symbol_names(
+    session: requests.Session,
+    codes: Sequence[str],
+    env: Mapping[str, str],
+) -> Dict[str, str]:
+    template = env.get("SYMBOL_PROFILE_URL_TEMPLATE", "https://kabutan.jp/stock/?code={code}")
+    headers = {"User-Agent": env.get("HTTP_USER_AGENT", "kabu4-ingest/1.0")}
+    result: Dict[str, str] = {}
+    for code in codes:
+        url = template.format(code=code)
+        try:
+            resp = session.get(url, timeout=15, headers=headers)
+            resp.raise_for_status()
+            soup = BeautifulSoup(resp.text, "html.parser")
+            title_tag = soup.find("title")
+            if title_tag and "【" in title_tag.text:
+                name = title_tag.text.split("【", 1)[0].strip()
+                result[code] = name if name else code
+                continue
+        except Exception:
+            pass
+        result[code] = code
+    return result
+
+
+def fetch_web_symbols(
+    env: Mapping[str, str],
+    recent_events: List[DetectedEvent],
+    session: requests.Session,
+) -> List[Dict[str, str]]:
+    """Try to resolve symbols from the internet.
+
+    Strategy (in order):
+    - SYMBOLS_CSV_URL: CSV with headers code,name[,sector]
+    - SYMBOLS_JSON_URL: JSON array of {code,name,sector?} or [code,...]
+    - TDNET_RSS_URL (HTML page): extract 4-digit codes from page text
+    - Fallback to codes seen in recent_events (name omitted)
+    """
+    csv_url = env.get("SYMBOLS_CSV_URL")
+    json_url = env.get("SYMBOLS_JSON_URL")
+    tdnet_url = env.get("TDNET_RSS_URL")
+
+    # CSV source
+    if csv_url:
+        try:
+            raw = fetch_text(session, csv_url)
+            buf = io.StringIO(raw)
+            reader = csv.DictReader(buf)
+            out: List[Dict[str, str]] = []
+            for row in reader:
+                code = (row.get("code") or "").strip()
+                if not code:
+                    continue
+                out.append({
+                    "code": code,
+                    "name": (row.get("name") or code).strip(),
+                    "sector": (row.get("sector") or None) or None,
+                })
+            if out:
+                return out
+        except Exception:
+            pass
+
+    # JSON source
+    if json_url:
+        try:
+            raw = fetch_text(session, json_url)
+            data = json.loads(raw)
+            out: List[Dict[str, str]] = []
+            if isinstance(data, list):
+                for item in data:
+                    if isinstance(item, str):
+                        out.append({"code": item, "name": item})
+                    elif isinstance(item, dict):
+                        code = str(item.get("code") or "").strip()
+                        if not code:
+                            continue
+                        out.append({
+                            "code": code,
+                            "name": str(item.get("name") or code).strip(),
+                            "sector": item.get("sector"),
+                        })
+            if out:
+                return out
+        except Exception:
+            pass
+
+    # TDNET page codes
+    if tdnet_url:
+        try:
+            html = fetch_text(session, tdnet_url)
+            # Extract 4-digit codes that likely represent JP equity codes
+            codes = sorted({m.group(0) for m in re.finditer(r"(?<!\d)(\d{4})(?!\d)", html)})
+            if codes:
+                names = resolve_symbol_names(session, codes, env)
+                return [
+                    {
+                        "code": c,
+                        "name": names.get(c, c),
+                    }
+                    for c in codes
+                ]
+        except Exception:
+            pass
+
+    # Fallback: any codes from recent events
+    codes = sorted({ev.code for ev in recent_events if ev.code})
+    if not codes:
+        return []
+    names = resolve_symbol_names(session, codes, env)
+    return [{"code": c, "name": names.get(c, c)} for c in codes]
 
 
 def upsert_symbols(conn, symbols: Iterable[Mapping[str, str]]) -> None:
@@ -74,11 +203,13 @@ def upsert_events(conn, events: Iterable[DetectedEvent]) -> None:
     rows = []
     for event in events:
         event_id = f"{event.code}-{event.date.date().isoformat()}-{event.tag}-{event.source}"
+        # Store as epoch milliseconds to stay consistent with Prisma's SQLite representation
+        epoch_ms = int(event.date.timestamp() * 1000)
         rows.append(
             (
                 event_id,
                 event.code,
-                event.date.isoformat(),
+                epoch_ms,
                 event.type,
                 event.title,
                 event.summary,
@@ -102,10 +233,10 @@ def build_daily_picks(
 ) -> List[Dict[str, object]]:
     weights = load_weights(weights_env)
     feature_map = to_feature_map(features)
-    latest_date = max(
-        (bar.trading_date for price_list in prices.values() for bar in price_list),
-        default=date.today(),
-    )
+    price_dates = [bar.trading_date for price_list in prices.values() for bar in price_list]
+    event_dates = [ev.date.date() for ev in events]
+    candidate_dates = price_dates + event_dates
+    latest_date = max(candidate_dates) if candidate_dates else date.today()
     latest_iso = latest_date.isoformat()
 
     events_by_code: Dict[str, List[DetectedEvent]] = defaultdict(list)
@@ -119,27 +250,41 @@ def build_daily_picks(
 
     picks: List[Dict[str, object]] = []
 
-    for code, price_list in price_lookup.items():
+    codes = sorted(set(price_lookup.keys()) | set(events_by_code.keys()))
+
+    for code in codes:
+        price_list = price_lookup.get(code, {})
         bar = price_list.get(latest_iso)
-        if not bar:
-            continue
         daily_features = feature_map.get(code, {}).get(latest_iso, {})
-        metrics = {
-            "volume_z": daily_features.get("volume_z", 0.0),
-            "gap_pct": daily_features.get("gap_pct", 0.0),
-            "supply_demand_proxy": daily_features.get("supply_demand_proxy", 0.0),
-        }
-        filters = {
-            "high20d_dist_pct": daily_features.get("high20d_dist_pct", 0.0),
-            "close": bar.close,
-        }
+        if daily_features:
+            metrics = {
+                "volume_z": daily_features.get("volume_z"),
+                "gap_pct": daily_features.get("gap_pct"),
+                "supply_demand_proxy": daily_features.get("supply_demand_proxy"),
+            }
+            filters = {
+                "high20d_dist_pct": daily_features.get("high20d_dist_pct"),
+                "close": getattr(bar, "close", None),
+            }
+        else:
+            metrics = {
+                "volume_z": None,
+                "gap_pct": None,
+                "supply_demand_proxy": None,
+            }
+            filters = {
+                "high20d_dist_pct": None,
+                "close": getattr(bar, "close", None),
+            }
         penalty = {
             "recent_negative": recent_negative_penalty(events_by_code.get(code, []), latest_date)
         }
+        # Consider recent events within a wider lookback window to ensure
+        # scoring reflects nearby catalysts in small sample datasets.
         candidate_events = [
             ev
             for ev in events_by_code.get(code, [])
-            if ev.date.date() <= latest_date and ev.date.date() >= latest_date - timedelta(days=2)
+            if ev.date.date() <= latest_date and ev.date.date() >= latest_date - timedelta(days=10)
         ]
         score = calculate_score(weights, candidate_events, metrics, filters, penalty)
         if score.normalized >= weights.minScore:
@@ -148,7 +293,7 @@ def build_daily_picks(
                     "date": latest_iso,
                     "code": code,
                     "score": score,
-                    "close": bar.close,
+                    "close": getattr(bar, "close", None),
                     "metrics": metrics,
                     "filters": filters,
                     "events": candidate_events,
@@ -174,9 +319,16 @@ def upsert_picks(conn, picks: Iterable[Dict[str, object]]) -> None:
         score: ScoreComponents = pick["score"]
         if score.normalized <= 0:
             continue
+        # Store date as epoch milliseconds for SQLite/Prisma consistency
+        try:
+            # Interpret pick["date"] as YYYY-MM-DD at 00:00:00 UTC
+            dt = datetime.strptime(str(pick["date"]), "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            epoch_ms = int(dt.timestamp() * 1000)
+        except Exception:
+            epoch_ms = None  # Fallback; should not happen with well-formed ISO date
         rows.append(
             (
-                pick["date"],
+                epoch_ms,
                 pick["code"],
                 round(score.normalized, 2),
                 json.dumps(score.reasons, ensure_ascii=False),
@@ -196,12 +348,14 @@ def upsert_picks(conn, picks: Iterable[Dict[str, object]]) -> None:
 def main() -> None:
     env = load_env()
     database_url = env.get("DATABASE_URL", "file:./prisma/dev.db")
-    tdnet_adapter = TdnetRssAdapter()
-    earnings_adapter = EarningsAdapter()
-    news_adapter = NewsAdapter()
+    session = requests.Session()
+    session.headers.update({"User-Agent": env.get("HTTP_USER_AGENT", "kabu4-ingest/1.0")})
+
+    tdnet_adapter = TdnetRssAdapter(rss_url=env.get("TDNET_RSS_URL"), session=session)
+    earnings_adapter = EarningsAdapter(feed_url=env.get("EARNINGS_FEED_URL"), session=session)
+    news_adapter = NewsAdapter(feed_url=env.get("NEWS_FEED_URL"), session=session)
     price_adapter = PriceAdapter()
 
-    symbols = read_symbols()
     prices = price_adapter.fetch()
     feature_calc = FeatureCalculator(price_adapter)
     features = feature_calc.compute()
@@ -214,6 +368,9 @@ def main() -> None:
     events.extend(detect_volume_spike(feature_map))
 
     with sqlite_conn(database_url) as conn:
+        # Prefer web-sourced symbols; fallback to local sample if none resolved
+        web_symbols = fetch_web_symbols(env, events, session)
+        symbols = web_symbols if web_symbols else read_symbols_local()
         upsert_symbols(conn, symbols)
         upsert_prices(conn, prices)
         upsert_features(conn, features)

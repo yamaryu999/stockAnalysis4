@@ -12,6 +12,12 @@
       "minScore": "最低スコア",
       "eventType": "イベント種別"
     },
+    "refresh": {
+      "button": "ニュースを更新",
+      "pending": "更新中…",
+      "success": "最新のニュースを取得しました",
+      "error": "ニュースの更新に失敗しました"
+    },
     "table": {
       "code": "銘柄コード",
       "name": "銘柄名",

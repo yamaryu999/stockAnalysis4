@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { PickItem, PicksResponse } from "@/lib/api";
-import { fetchPicks } from "@/lib/api";
+import { fetchPicks, refreshNews } from "@/lib/api";
 import { t } from "@/lib/i18n";
 import FilterBar, { FilterState } from "./filter-bar";
 import PicksTable from "./picks-table";
@@ -28,6 +28,8 @@ export default function DashboardContent({ initialData, initialFilters }: Props)
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [selected, setSelected] = useState<PickItem | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const router = useRouter();
 
   const updateUrl = useCallback((nextFilters: FilterState) => {
@@ -84,6 +86,42 @@ export default function DashboardContent({ initialData, initialFilters }: Props)
     [updateUrl]
   );
 
+  const handleApplyLatestDate = useCallback(() => {
+    if (data.date === filters.date) {
+      return;
+    }
+    onFilterChange({
+      ...filters,
+      date: data.date
+    });
+  }, [data.date, filters, onFilterChange]);
+
+  const handleRefreshNews = useCallback(async () => {
+    setRefreshing(true);
+    setStatus(null);
+    setLoading(true);
+    try {
+      const result = await refreshNews();
+      const updated = await fetchPicks({
+        date: filters.date,
+        minScore: filters.minScore,
+        type: filters.type
+      });
+      setData(updated);
+      setStatus({
+        type: "success",
+        message: `${t("dashboard.refresh.success")} (${result.date})`
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t("dashboard.refresh.error");
+      setStatus({ type: "error", message });
+    } finally {
+      setRefreshing(false);
+      setLoading(false);
+    }
+  }, [filters.date, filters.minScore, filters.type]);
+
   const items = useMemo(() => data.items, [data.items]);
 
   return (
@@ -93,7 +131,31 @@ export default function DashboardContent({ initialData, initialFilters }: Props)
         eventTypes={EVENT_TYPES}
         onChange={onFilterChange}
         weights={data.weights}
+        onRefreshNews={handleRefreshNews}
+        refreshing={refreshing}
       />
+      {status ? (
+        <div
+          className={`rounded border px-4 py-2 text-xs ${status.type === "success" ? "border-emerald-500/40 bg-emerald-900/20 text-emerald-100" : "border-rose-500/40 bg-rose-900/20 text-rose-100"}`}
+        >
+          {status.message}
+        </div>
+      ) : null}
+      {data.fallbackApplied && data.requestedDate !== data.date ? (
+        <div className="rounded border border-amber-500/40 bg-amber-900/30 px-4 py-3 text-xs text-amber-100">
+          <p className="mb-2">
+            指定した日付（{data.requestedDate}）にデータが見つからなかったため、直近の {data.date} を表示しています。
+          </p>
+          <button
+            type="button"
+            onClick={handleApplyLatestDate}
+            disabled={filters.date === data.date || loading}
+            className="rounded border border-amber-400/60 px-3 py-1 font-medium text-amber-100 transition hover:border-amber-300 hover:bg-amber-900/60 disabled:opacity-50"
+          >
+            フィルタを最新日付に合わせる
+          </button>
+        </div>
+      ) : null}
       {items.length === 0 && !loading ? (
         <div className="rounded border border-dashed border-slate-700 p-8 text-center text-sm text-slate-400">
           {t("dashboard.empty")}

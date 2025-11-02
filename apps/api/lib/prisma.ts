@@ -23,16 +23,12 @@ function resolveDatabaseUrl(url: string | undefined): string | undefined {
   ];
   const found = candidates.find((cand) => fs.existsSync(cand));
   if (found) {
-    let rel = path.relative(process.cwd(), found);
-    if (!rel.startsWith(".")) rel = `./${rel}`;
-    // Use a relative file: URL to avoid absolute path issues
-    return `file:${rel.replace(/\\/g, "/")}`;
+    // Use absolute file path to be robust against cwd changes in Next.js
+    return `file:${found.replace(/\\/g, "/")}`;
   }
-  // Fall back to resolving from repo root two levels up
-  let fallback = path.resolve(process.cwd(), "..", "..", p);
-  let rel = path.relative(process.cwd(), fallback);
-  if (!rel.startsWith(".")) rel = `./${rel}`;
-  return `file:${rel.replace(/\\/g, "/")}`;
+  // Fall back to absolute path from repo root two levels up
+  const fallback = path.resolve(process.cwd(), "..", "..", p);
+  return `file:${fallback.replace(/\\/g, "/")}`;
 }
 
 const resolvedUrl = resolveDatabaseUrl(process.env.DATABASE_URL);

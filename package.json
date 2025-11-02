@@ -6,16 +6,21 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:web": "npm --workspace apps/web run dev",
-    "dev:api": "npm --workspace apps/api run dev",
+    "dev:web": "pnpm --dir apps/web run dev",
+    "dev:api": "pnpm --dir apps/api run dev",
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",
     "test": "vitest --config vitest.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "playwright:install": "playwright install --with-deps",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:generate": "prisma generate",
     "prisma:seed": "node scripts/seed.js"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "playwright": "^1.56.0",
     "@types/node": "^20.11.17",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",

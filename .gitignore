@@ -7,6 +7,12 @@ dist
 .env.local
 prisma/dev.db
 prisma/dev.db-journal
+prisma/*.db-wal
+prisma/*.db-shm
 **/__pycache__
 **/*.pyc
 .DS_Store
+.vscode/mcp.json
+.venv/
+.serena/
+logs/
