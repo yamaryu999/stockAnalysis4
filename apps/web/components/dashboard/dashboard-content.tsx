@@ -29,7 +29,11 @@ export default function DashboardContent({ initialData, initialFilters }: Props)
   const [selected, setSelected] = useState<PickItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [status, setStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+    sources?: string[];
+  } | null>(null);
   const router = useRouter();
 
   const updateUrl = useCallback((nextFilters: FilterState) => {
@@ -110,7 +114,8 @@ export default function DashboardContent({ initialData, initialFilters }: Props)
       setData(updated);
       setStatus({
         type: "success",
-        message: `${t("dashboard.refresh.success")} (${result.date})`
+        message: `${t("dashboard.refresh.success")} (${result.date})`,
+        sources: result.sources
       });
     } catch (error) {
       const message =
@@ -138,7 +143,26 @@ export default function DashboardContent({ initialData, initialFilters }: Props)
         <div
           className={`rounded border px-4 py-2 text-xs ${status.type === "success" ? "border-emerald-500/40 bg-emerald-900/20 text-emerald-100" : "border-rose-500/40 bg-rose-900/20 text-rose-100"}`}
         >
-          {status.message}
+          <p>{status.message}</p>
+          {status.type === "success" && status.sources && status.sources.length > 0 ? (
+            <div className="mt-2 space-y-1">
+              <p className="font-medium">{t("dashboard.refresh.sourcesHeading")}</p>
+              <ul className="list-inside list-disc space-y-1">
+                {status.sources.map((url) => (
+                  <li key={url}>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 hover:text-emerald-200"
+                    >
+                      {url}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       ) : null}
       {data.fallbackApplied && data.requestedDate !== data.date ? (

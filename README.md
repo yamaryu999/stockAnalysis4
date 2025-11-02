@@ -90,6 +90,7 @@ pnpm run dev:web   # → http://localhost:3000
   - `TDNET_RSS_URL` を指定すると当該ページを取得し、4桁コードを抽出してイベント候補にします
 - ニュース（リアルタイム）
   - 既定で `NEWS_FEED_URL=https://kabutan.jp/news/?b=k250` を参照し、最新の決算ニュースをスクレイピングしてイベント化します
+  - 追加のメディアも参照可能です。環境変数 `NEWS_FEEDS` にカンマ区切りで複数のフィードURLを指定してください（JSON/HTMLどちらでも可。JSONは `code,title,date[,summary,url]` 形式を想定）。
   - 記事タイトルから極性を推定し、ポジティブ／ネガティブ／ニュートラルでスコアに反映します
   - フィードを差し替えたい場合は JSON 配列（`[{code,title,summary,date,polarity}]`）の URL を設定してください
 - 決算/ニュース（任意のJSONフィード）

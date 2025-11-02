@@ -166,10 +166,11 @@ def upsert_prices(conn, prices: Mapping[str, List[PriceBar]]) -> None:
     rows = []
     for code, bars in prices.items():
         for bar in bars:
+            dt = datetime.combine(bar.trading_date, datetime.min.time(), tzinfo=timezone.utc)
             rows.append(
                 (
                     code,
-                    bar.trading_date.isoformat(),
+                    dt.isoformat(),
                     f"{bar.open:.2f}",
                     f"{bar.high:.2f}",
                     f"{bar.low:.2f}",
@@ -190,7 +191,7 @@ def upsert_features(conn, features: Iterable[FeatureRecord]) -> None:
     rows = [
         (
             feature.code,
-            feature.date,
+            datetime.fromisoformat(feature.date).replace(tzinfo=timezone.utc).isoformat(),
             feature.name,
             feature.value,
         )

@@ -44,6 +44,7 @@ export type RefreshNewsResponse = {
   eventsUpserted: number;
   picksCount: number;
   date: string;
+  sources: string[];
 };
 
 export async function fetchPicks(query: PicksQuery): Promise<PicksResponse> {

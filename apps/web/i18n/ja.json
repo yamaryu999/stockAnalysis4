@@ -16,12 +16,14 @@
       "button": "ニュースを更新",
       "pending": "更新中…",
       "success": "最新のニュースを取得しました",
-      "error": "ニュースの更新に失敗しました"
+      "error": "ニュースの更新に失敗しました",
+      "sourcesHeading": "参照したWebサイト"
     },
     "table": {
       "code": "銘柄コード",
       "name": "銘柄名",
       "score": "スコア",
+      "reasons": "理由",
       "volumeZ": "出来高Z",
       "gapPct": "ギャップ%",
       "sdProxy": "需給Proxy",
