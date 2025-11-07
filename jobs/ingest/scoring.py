@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Tuple
 
@@ -90,7 +91,14 @@ def normalize_tape(metrics: Mapping[str, float]) -> List[Dict[str, object]]:
             normalized = max(min(value, max_value), 0) / max_value
         else:
             normalized = max(min(value, max_value), 0) / max_value
-        reasons.append({"kind": "tape", "tag": key, "normalized": normalized, "raw": value})
+        reasons.append(
+            {
+                "kind": "tape",
+                "tag": key,
+                "normalized": normalized,
+                "details": {"raw": value},
+            }
+        )
     return reasons
 
 
@@ -117,7 +125,7 @@ def calculate_score(
                 "tag": reason["tag"],
                 "weight": tag_weight,
                 "applied": reason["normalized"] * tag_weight,
-                "raw": reason["raw"],
+                "details": reason.get("details"),
             }
         )
 
@@ -125,15 +133,22 @@ def calculate_score(
         tag_weight = weights.event.get(event.tag, 0.0)
         if tag_weight == 0:
             continue
-        normalized = min(max(event.score_raw or 0.0, 0.0), 1.0)
+        raw_score = event.score_raw if event.score_raw is not None else 1.0
+        normalized = min(max(raw_score, 0.0), 1.0)
+        occurred_at: str | None = None
+        if isinstance(event.date, datetime):
+            occurred_at = event.date.isoformat()
         reasons.append(
             {
                 "kind": "event",
                 "tag": event.tag,
                 "weight": tag_weight,
                 "applied": normalized * tag_weight,
-                "title": event.title,
-                "source": event.source,
+                "details": {
+                    "title": event.title,
+                    "source": event.source,
+                    "occurredAt": occurred_at,
+                },
             }
         )
         weighted_total += normalized * tag_weight
@@ -145,7 +160,15 @@ def calculate_score(
     base_score = weighted_total / weight_sum
     penalty = min(max(penalties.get("recent_negative", 0.0), 0.0), 1.0)
     if penalty:
-        reasons.append({"kind": "penalty", "tag": "recent_negative", "applied": -penalty})
+        reasons.append(
+            {
+                "kind": "penalty",
+                "tag": "recent_negative_event",
+                "weight": penalty,
+                "applied": -penalty,
+                "details": {},
+            }
+        )
     penalized = max(base_score - penalty, 0.0)
 
     passed_filters = True
@@ -155,10 +178,26 @@ def calculate_score(
             continue
         if key == "high20d_dist_pct" and value < threshold:
             passed_filters = False
-            reasons.append({"kind": "filter", "tag": key, "value": value})
+            reasons.append(
+                {
+                    "kind": "filter",
+                    "tag": "high20d_dist_pct",
+                    "weight": 0.0,
+                    "applied": 0.0,
+                    "details": {"value": value},
+                }
+            )
         if key == "close" and value < threshold:
             passed_filters = False
-            reasons.append({"kind": "filter", "tag": key, "value": value})
+            reasons.append(
+                {
+                    "kind": "filter",
+                    "tag": "close_price",
+                    "weight": 0.0,
+                    "applied": 0.0,
+                    "details": {"value": value},
+                }
+            )
 
     normalized = penalized * 100 if passed_filters else 0.0
     return ScoreComponents(raw=penalized, normalized=normalized, passed_filters=passed_filters, reasons=reasons)

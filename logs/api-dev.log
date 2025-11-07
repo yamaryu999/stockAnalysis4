@@ -1,17 +1,218 @@
 
-> @kabu4/api@0.1.0 dev
-> next dev
+> kabu4@ dev:api /home/yamaryu/ドキュメント/kabu4
+> pnpm --dir apps/api run dev
+
+
+> @kabu4/api@0.1.0 dev /home/yamaryu/ドキュメント/kabu4/apps/api
+> next dev -p 3001
 
    ▲ Next.js 14.1.0
    - Local:        http://localhost:3001
 
- ✓ Ready in 5.7s
- ○ Compiling /api/picks ...
- ✓ Compiled /api/picks in 767ms (41 modules)
-[api] Prisma datasource: file:/tmp/kabu4-dev.db
- ✓ Compiled /api/symbols/[code]/events in 412ms (44 modules)
-[api] Prisma datasource: file:/tmp/kabu4-dev.db
-[api] Prisma datasource: file:/tmp/kabu4-dev.db
- ✓ Compiled /api/symbols/[code]/prices in 232ms (47 modules)
-[api] Prisma datasource: file:/tmp/kabu4-dev.db
-[api] Prisma datasource: file:/tmp/kabu4-dev.db
+npm error code ENOWORKSPACES
+npm error This command does not support workspaces.
+npm error A complete log of this run can be found in: /home/yamaryu/.npm/_logs/2025-11-07T14_48_43_601Z-debug-0.log
+ ✓ Ready in 2.7s
+ ✓ Compiled /api/picks in 396ms (41 modules)
+[api] Prisma datasource: file:/home/yamaryu/ドキュメント/kabu4/prisma/dev.db
+ ✓ Compiled /api/news/refresh in 386ms (115 modules)
+[api] Prisma datasource: file:/home/yamaryu/ドキュメント/kabu4/prisma/dev.db
+ ✓ Compiled /api/symbols/[code]/prices in 181ms (118 modules)
+ ✓ Compiled (121 modules)
+[api] Prisma datasource: file:/home/yamaryu/ドキュメント/kabu4/prisma/dev.db
+[api] Prisma datasource: file:/home/yamaryu/ドキュメント/kabu4/prisma/dev.db
+[api] Prisma datasource: file:/home/yamaryu/ドキュメント/kabu4/prisma/dev.db
+ ⨯ Failed to generate static paths for /api/symbols/[code]/events:
+Error: Cannot find module '.prisma/client/default'
+Require stack:
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js
+- /home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/events/route.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:55:36
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at mod.require (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js:2:6)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js',
+    '/home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/events/route.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ]
+}
+ ⨯ Failed to generate static paths for /api/symbols/[code]/prices:
+Error: Cannot find module '.prisma/client/default'
+Require stack:
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js
+- /home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/prices/route.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:55:36
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at mod.require (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js:2:6)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js',
+    '/home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/prices/route.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ]
+}
+ ⨯ Error: Cannot find module '.prisma/client/default'
+Require stack:
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js
+- /home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/events/route.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:55:36
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at mod.require (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js:2:6)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js',
+    '/home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/events/route.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ],
+  page: '/api/symbols/1832/events'
+}
+ ⨯ Error: Cannot find module '.prisma/client/default'
+Require stack:
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js
+- /home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/prices/route.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:55:36
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at mod.require (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js:2:6)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js',
+    '/home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/prices/route.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ],
+  page: '/api/symbols/1832/prices'
+}
+ ○ Compiling /_error ...
+ ⨯ Error: Cannot find module '.prisma/client/default'
+Require stack:
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js
+- /home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/events/route.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:55:36
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at mod.require (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js:2:6)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js',
+    '/home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/events/route.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ],
+  page: '/api/symbols/1847/events'
+}
+ ⨯ Error: Cannot find module '.prisma/client/default'
+Require stack:
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js
+- /home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/prices/route.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js
+- /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at /home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:55:36
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at mod.require (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js:2:6)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/@prisma+client@5.9.1_prisma@5.22.0/node_modules/@prisma/client/default.js',
+    '/home/yamaryu/ドキュメント/kabu4/apps/api/.next/server/app/api/symbols/[code]/prices/route.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/require.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/load-components.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/utils.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/home/yamaryu/ドキュメント/kabu4/node_modules/.pnpm/next@14.1.0_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ],
+  page: '/api/symbols/1847/prices'
+}
+ ✓ Compiled /_error in 2.9s (475 modules)
